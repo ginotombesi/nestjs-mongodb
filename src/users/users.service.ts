@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   async findAllUsers(): Promise<User[]> {
-    const allUsers = await this.userModel.find().populate('settings').exec();
+    const allUsers = await this.userModel.find().populate(['settings', 'posts']).exec();
     return allUsers;
   }
 

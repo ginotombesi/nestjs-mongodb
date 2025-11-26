@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { UserSettings } from "./UserSettings.schema";
+import { Post } from "./Post.schema";
 import mongoose from "mongoose";
+
 
 //Definimos el esquema de usuario, representa la forma en que se va a guardar en la base de datos.
 // la colección se llama users.
@@ -17,6 +19,9 @@ export class User {
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UserSettings' })
     settings?: UserSettings;
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }] })
+    posts?: Post[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
