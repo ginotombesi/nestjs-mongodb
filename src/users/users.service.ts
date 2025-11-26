@@ -2,15 +2,28 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/User.schema';
+import { UserSettings } from 'src/schemas/UserSettings.schema';
 import { CreateUserDto } from './dto/Create-User.dto';
 import { UpdateUserDto } from './dto/Update-User.dto';
 import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>, @InjectModel(UserSettings.name) private userSettingsModel: Model<UserSettings>) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser({settings, ...createUserDto}: CreateUserDto): Promise<User> {
+    if (settings) {
+      const newSettings = new this.userSettingsModel(settings);
+      const savedSettings = await newSettings.save();
+      const newUser = new this.userModel(
+        {
+          ...createUserDto,
+          settings: savedSettings._id
+        }
+      )
+      return newUser.save();
+    }
+
     const newUser = new this.userModel(createUserDto);
     if (
       await this.userModel.findOne({ username: createUserDto.username }).exec()
@@ -24,7 +37,7 @@ export class UsersService {
   }
 
   async findAllUsers(): Promise<User[]> {
-    const allUsers = await this.userModel.find().exec();
+    const allUsers = await this.userModel.find().populate('settings').exec();
     return allUsers;
   }
 

@@ -45,5 +45,4 @@ export class UsersController {
         return deletedUser;
     }
 
-
 }
