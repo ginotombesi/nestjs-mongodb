@@ -68,4 +68,17 @@ export class UsersService {
         
         return updatedUser;
     }
+
+    async deleteUser(id: string): Promise<User> {
+        const isValid = mongoose.Types.ObjectId.isValid(id);
+        if (!isValid) {
+            throw new HttpException(`el ID ${id} no es valido`, 400);
+        }
+
+        const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+        if (!deletedUser) {
+            throw new HttpException(`el usuario con ID ${id} no existe`, 404);
+        }
+        return deletedUser;
+    }
 }
