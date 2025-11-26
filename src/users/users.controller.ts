@@ -1,6 +1,7 @@
-import { Controller, Post, Body, UsePipes, ValidationPipe, Get, Param, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, ValidationPipe, Get, Param, HttpException, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/Create-User.dto';
+import { UpdateUserDto } from './dto/Update-User.dto';
 
 @Controller('users')
 export class UsersController {
@@ -30,6 +31,12 @@ export class UsersController {
     async getUserById(@Param('id') id: string) {
         const oneUser = await this.usersService.getUserById(id);
         return oneUser;
+    }
+
+    @Patch(':id')
+    async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        const updatedUser = await this.usersService.updateUser(id, updateUserDto);
+        return updatedUser;
     }
 
 
